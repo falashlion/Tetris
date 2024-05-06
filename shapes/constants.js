@@ -1,0 +1,25 @@
+export const PAUSE_MESSAGES = ["Hold on! Your game is paused. Take a breath, strategize, and when you’re ready, let the blocks fall again!"];
+
+export const LEVEL_TO_TICK_TIME = {
+    0: 887,
+    1: 820,
+    2: 753,
+    3: 686,
+    4: 619,
+    5: 552,
+    6: 469,
+    7: 368,
+    8: 285,
+    9: 184,
+    10: 167,
+    11: 151,
+    12: 134,
+    13: 117,
+    14: 100,
+    15: 100,
+    16: 84,
+    17: 84,
+    18: 67,
+    19: 50,
+    20: 50,
+};
