@@ -1,15 +1,16 @@
-import Cell from "./shapes/Cell";
-import Stack from "./shapes/Stack";
-import Tetrimino from "./shapes/Tetrimino";
+import Cell from "./Cell.js";
+import Stack from "./Stack.js";
+import Tetrimino from "./Tetrimino.js";
 import {
   PAUSE_MESSAGES,
   LEVEL_TO_TICK_TIME,
   SCORE_COMMENT,
-} from "./shapes/constants";
+} from "./constants.js";
 
 export default class TetrisLogic {
-  constructor(ctx, cellSize) {
+  constructor(canvas, ctx, cellSize) {
     this.ctx = ctx;
+    this.canvas = canvas;
     this.cellSize = cellSize;
     this.lines = 0;
     this.score = 0;
@@ -92,9 +93,9 @@ export default class TetrisLogic {
   }
 
   async lockTetromino() {
-    this.stack.addTetrimino(this.tetrimino.cells);
     this.tetrimino = this.nextTetrimino;
     this.nextTetrimino = new Tetrimino();
+    this.stack.addCells(this.tetrimino.cells);
     if (this.collisionOccurs()) {
       this.isOver = true;
       this.displayMessage(
@@ -142,21 +143,23 @@ export default class TetrisLogic {
 
   collisionOccurs() {
     for (var i = 0; i < 4; i++) {
-      var xPosition = this.tetrimino.cells[i].x;
-      var yPosition = this.tetrimino.cells[i].y;
+      var xPosition = Math.round(this.tetrimino.cells[i].x);
+      var yPosition = Math.round(this.tetrimino.cells[i].y);
       if (xPosition < 0 || xPosition > 9) {
-        console.log("collision with wall");
+        // console.log("collision with wall");
         return true;
       }
 
       if (yPosition > 19) {
-        console.log("collision with floor");
+        // console.log("collision with floor");
         return true;
       }
-      if (yPosition > 0) {
-        if (this.stack.rows[yPosition][xPosition] !== "empty") {
-          console.log("collision with the stack");
-          return true;
+      if (yPosition >= 0 && yPosition < 20) {
+        if (xPosition >= 0 && xPosition < 10) {
+          if (this.stack.rows[yPosition][xPosition] !== "empty") {
+            // console.log("collision with the stack");
+            return true;
+          }
         }
       }
     }
@@ -165,7 +168,7 @@ export default class TetrisLogic {
 
   gameOver() {
     this.isOver = true;
-    console.log("Game over");
+    // console.log("Game over");
     clearInterval(this.ticker);
 
     var comment;
@@ -178,13 +181,13 @@ export default class TetrisLogic {
     this.displayMessage(
       "GAME OVER",
       "You have lost",
-      "Your score was: ${this.score} . \nPress Enter to restart\n",
+      "Your score was: " + this.score,
       comment
     );
   }
 
   displayMessage(mainMessage, comment, secondComment, typeInstruction) {
-    console.log(mainMessage, comment, secondComment, typeInstruction);
+    // console.log(mainMessage, comment, secondComment, typeInstruction);
     this.ctx.save();
     this.ctx.fillStyle = "darkslateblue";
     this.ctx.fillRect(
@@ -197,16 +200,24 @@ export default class TetrisLogic {
     this.ctx.font = "30px monospace";
     this.ctx.textAlign = "center";
     this.ctx.fillStyle = "white";
-    this.ctx.fillText(mainMessage, canvas.width / 2, canvas.height / 2 - 40);
+    this.ctx.fillText(
+      mainMessage,
+      this.canvas.width / 2,
+      this.canvas.height / 2 - 40
+    );
     this.ctx.font = "15px monospace";
 
-    this.ctx.fillText(comment, canvas.width / 2, canvas.height / 2);
-    this.ctx.fillText(secondComment, canvas.width / 2, canvas.height / 2 + 30);
+    this.ctx.fillText(comment, this.canvas.width / 2, this.canvas.height / 2);
+    this.ctx.fillText(
+      secondComment,
+      this.canvas.width / 2,
+      this.canvas.height / 2 + 30
+    );
     this.ctx.font = "13px monospace";
     this.ctx.fillText(
       typeInstruction,
-      canvas.width / 2,
-      canvas.height / 2 + 60
+      this.canvas.width / 2,
+      this.canvas.height / 2 + 60
     );
     this.ctx.restore();
   }
@@ -235,43 +246,43 @@ export default class TetrisLogic {
     this.ctx.save();
     this.ctx.fillStyle = "#FFFFFF";
     this.ctx.fillRect(
-      canvas.width - 6 * this.cellSize,
+      this.canvas.width  * this.cellSize,
       0,
-      6 * this.cellSize,
-      canvas.height
+      this.cellSize,
+      this.canvas.height 
     );
     this.nextTetrimino.draw(this.ctx, this.cellSize);
     this.ctx.font = "18px monospace";
     this.ctx.textAlign = "center";
-    this.ctx.fillStyle = "black";
+    this.ctx.fillStyle = "white";
 
     this.ctx.fillText(
-      "LEVEL: ${this.level}",
-      13 * this.cellSize,
+      "LEVEL: " + this.level,
+      15 * this.cellSize,
       12 * this.cellSize
     );
     this.ctx.font = "30px monospace";
     this.ctx.fillText(
-      "SCORE: ${this.score}",
-      13 * this.cellSize,
+      "SCORE:" +this.score,
+      15 * this.cellSize,
       14 * this.cellSize
     );
     this.ctx.font = "15px monospace";
     this.ctx.fillText(
       "Press [SPACE] for hardDrop",
-      13 * this.cellSize,
+      15 * this.cellSize,
       16 * this.cellSize
     );
     this.ctx.fillText(
       "Press [P] to pause",
-      13 * this.cellSize,
+      15 * this.cellSize,
       17 * this.cellSize
     );
 
     this.ctx.fillStyle = "white";
-    this.ctx.fillRect(0, 0, 10 * this.cellSize, 20 * this.cellSize);
+    this.ctx.fillRect(0, 0, 10 * this.cellSize, 30 * this.cellSize);
 
-    this.stack.draw(this.ctx, this.cellSize);
+    this.stack.drawStack(this.ctx, this.cellSize);
 
     this.tetrimino.draw(this.ctx, this.cellSize);
     this.ctx.restore();

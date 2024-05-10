@@ -68,8 +68,14 @@ export default class Stack {
   }
 
   addCells(cells) {
-    for (var i = 0; i < 4; i++) {
-      this.rows[cells[i].y][cells[i].x] = cells[i].color;
+    if (!cells || cells.length === 0) {
+      return;
+    }
+    for (var i = 0; i < cells.length; i++) {
+      var cell = cells[i];
+      if (cell.y >= 0 && cell.y < this.rows.length && cell.x >= 0 && cell.x < this.rows[0].length) {
+        this.rows[cell.y][cell.x] = cell.color;
+      }
     }
   }
 

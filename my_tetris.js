@@ -3,14 +3,14 @@ import TetrisLogic from "./TetrisLogic.js";
 var cellSize = 32;
 
 const canvas = document.getElementById("tetris");
-console.log(canvas);
+// console.log(canvas);
 
-canvas.width = 10 * cellSize;
-canvas.height = 40 * cellSize;
+canvas.width = 20 * cellSize;
+canvas.height = 20 * cellSize;
 
 var ctx = canvas.getContext("2d");
 
-var tetris = new TetrisLogic(ctx, cellSize);
+var tetris = new TetrisLogic(canvas, ctx, cellSize);
 
 var lastTime = 0;
 
@@ -31,13 +31,16 @@ document.onkeydown = (Event) => {
     case "ArrowDown":
       tetris.move("down");
       break;
-    case "p":
+    case "ArrowUp":
+      tetris.move("turn");
+      break;
+    case 'p':
       tetris.pause();
       break;
-    case " ":
+    case '':
       tetris.hardDrop();
       break;
-    case "Enter":
+    case 'Enter':
       tetris.restart();
       break;
     default:
