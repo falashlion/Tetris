@@ -14,12 +14,16 @@ export default class Cell {
   }
 
   draw(ctx, cellSize) {
-
     ctx.save();
 
     ctx.fillStyle = this.color;
     // Calculate the y-coordinate, adjusted to hide the top 2 rows.
-    ctx.fillRect(this.x * cellSize, (this.y - 2) * cellSize , cellSize, cellSize);
+    ctx.fillRect(
+      this.x * cellSize,
+      (this.y - 2) * cellSize,
+      cellSize,
+      cellSize
+    );
 
     ctx.restore();
   }
