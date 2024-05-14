@@ -37,12 +37,15 @@ document.onkeydown = (Event) => {
     case 'p':
       tetris.pause();
       break;
-    case '':
+    case ' ':
       tetris.hardDrop();
       break;
-    case 'Enter':
+    case 'r':
       tetris.restart();
       break;
+    case 'Enter':
+        tetris.restart();
+        break;
     default:
       return;
   }

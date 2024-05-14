@@ -1,6 +1,6 @@
 import Cell from "./Cell.js";
 import Stack from "./Stack.js";
-import Tetrimino from "./Tetrimino.js";
+import Tetromino from "./Tetromino.js";
 import {
   PAUSE_MESSAGES,
   LEVEL_TO_TICK_TIME,
@@ -19,24 +19,24 @@ export default class TetrisLogic {
     this.gameOver = false;
     this.tickTime = 887;
     this.stack = new Stack();
-    var firstTetrimino = new Tetrimino();
-    firstTetrimino.putInGame();
-    this.tetrimino = firstTetrimino;
-    this.nextTetrimino = new Tetrimino();
+    var firstTetromino = new Tetromino();
+    firstTetromino.putInGame();
+    this.tetromino = firstTetromino;
+    this.nextTetromino = new Tetromino();
     this.onPause = false;
     this.isOver = false;
     this.clearingRows = false;
     this.startAsyncTicker();
+    this.stopGame = this.gameOver.bind(this);
   }
 
-  async startAsyncTicker() {
-    this.ticker = await window.setInterval(() => {
-      this.tick();
-    }, this.tickTime);
+async startAsyncTicker() {
+    this.ticker = await window.setInterval(() => this.tick(), this.tickTime);
   }
 
   async pause() {
     if (this.isOver) return;
+
     if (!this.onPause) {
       this.onPause = true;
       clearInterval(this.ticker);
@@ -59,12 +59,12 @@ export default class TetrisLogic {
 
   move(direction) {
     if (!this.isOver && !this.onPause) {
-      this.tetrimino.move(direction);
+      this.tetromino.move(direction);
       if (this.collisionOccurs() && direction === "down") {
-        this.tetrimino.reverseMove(direction);
+        this.tetromino.reverseMove(direction);
         this.lockTetromino();
       } else if (this.collisionOccurs()) {
-        this.tetrimino.reverseMove(direction);
+        this.tetromino.reverseMove(direction);
       } else {
         this.draw();
       }
@@ -75,13 +75,13 @@ export default class TetrisLogic {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   }
 
-  async hardDrop(direction) {
+  async hardDrop() {
     if (!this.isOver && !this.onPause) {
       console.log("hard drop");
       while (true) {
-        this.tetrimino.move("down");
+        this.tetromino.move("down");
         if (this.collisionOccurs()) {
-          this.tetrimino.reverseMove("down");
+          this.tetromino.reverseMove("down");
           this.lockTetromino();
           this.draw();
           return;
@@ -92,29 +92,32 @@ export default class TetrisLogic {
     }
   }
 
-  async lockTetromino() {
-    this.tetrimino = this.nextTetrimino;
-    this.nextTetrimino = new Tetrimino();
-    this.stack.addCells(this.tetrimino.cells);
-    if (this.collisionOccurs()) {
-      this.isOver = true;
-      this.displayMessage(
-        "GAME OVER",
-        "You have lost",
-        "Your score was: " + this.score,
-        "Press r to restart"
-      );
-      clearInterval(this.ticker);
-      return;
-    }
-    this.clearRows();
-    this.draw();
-  }
+async lockTetromino() {
+    console.log(this.stack.overflows);
+    let cellToAdd = this.tetromino.cells.map(cell => ({
+      x: cell.x,
+      y: cell.y,
+      color: cell.color
+    }));
+    
+    this.stack.addCells(cellToAdd);
+    this.clearingRows = true;
+    var rowsCleared = await this.stack.clearFullRows();
+    console.log(rowsCleared);
+    this.clearingRows = false;
+    this.updateScore(rowsCleared);
 
-  newTetrimino() {
-    this.tetrimino = this.nextTetrimino;
-    this.tetrimino.putInGame();
-    this.nextTetrimino = new Tetrimino();
+    if (this.stack.overflows()) {
+      this.stopGame;  
+    } else {
+      this.newTetromino();
+      this.draw();
+    }
+  }
+  newTetromino() {
+    this.tetromino = this.nextTetromino;
+    this.tetromino.putInGame();
+    this.nextTetromino = new Tetromino();
     this.draw();
   }
 
@@ -143,14 +146,14 @@ export default class TetrisLogic {
 
   collisionOccurs() {
     for (var i = 0; i < 4; i++) {
-      var xPosition = Math.round(this.tetrimino.cells[i].x);
-      var yPosition = Math.round(this.tetrimino.cells[i].y);
+      var xPosition = Math.round(this.tetromino.cells[i].x);
+      var yPosition = Math.round(this.tetromino.cells[i].y);
       if (xPosition < 0 || xPosition > 9) {
         // console.log("collision with wall");
         return true;
       }
 
-      if (yPosition > 19) {
+      if (yPosition > 21) {
         // console.log("collision with floor");
         return true;
       }
@@ -191,9 +194,9 @@ export default class TetrisLogic {
     this.ctx.save();
     this.ctx.fillStyle = "darkslateblue";
     this.ctx.fillRect(
-      this.cellSize * 0.5,
-      this.cellSize * 5.5,
-      this.cellSize * 15,
+      this.cellSize * 2.6,
+      this.cellSize * 6.5,
+      this.cellSize * 14,
       this.cellSize * 7
     );
 
@@ -231,10 +234,10 @@ export default class TetrisLogic {
       this.gameOver = false;
       this.tickTime = 887;
       this.stack = new Stack();
-      var firstTetrimino = new Tetrimino();
-      firstTetrimino.putInGame();
-      this.tetrimino = firstTetrimino;
-      this.nextTetrimino = new Tetrimino();
+      var firstTetromino = new Tetromino();
+      firstTetromino.putInGame();
+      this.tetromino = firstTetromino;
+      this.nextTetromino = new Tetromino();
       this.onPause = false;
       this.isOver = false;
       this.ticker = window.setInterval(() => this.tick(), this.tickTime);
@@ -246,12 +249,12 @@ export default class TetrisLogic {
     this.ctx.save();
     this.ctx.fillStyle = "#FFFFFF";
     this.ctx.fillRect(
-      this.canvas.width  * this.cellSize,
+      this.canvas.width * this.cellSize,
       0,
       this.cellSize,
-      this.canvas.height 
+      this.canvas.height
     );
-    this.nextTetrimino.draw(this.ctx, this.cellSize);
+    this.nextTetromino.draw(this.ctx, this.cellSize);
     this.ctx.font = "18px monospace";
     this.ctx.textAlign = "center";
     this.ctx.fillStyle = "white";
@@ -263,7 +266,7 @@ export default class TetrisLogic {
     );
     this.ctx.font = "30px monospace";
     this.ctx.fillText(
-      "SCORE:" +this.score,
+      "SCORE:" + this.score,
       15 * this.cellSize,
       14 * this.cellSize
     );
@@ -284,7 +287,7 @@ export default class TetrisLogic {
 
     this.stack.drawStack(this.ctx, this.cellSize);
 
-    this.tetrimino.draw(this.ctx, this.cellSize);
+    this.tetromino.draw(this.ctx, this.cellSize);
     this.ctx.restore();
   }
 

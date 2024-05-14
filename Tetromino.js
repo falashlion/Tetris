@@ -1,7 +1,7 @@
 import Cell from "./Cell.js";
 
-export default class Tetrimino {
-  tetrominoes = [
+export default class Tetromino {
+  Tetriminoes = [
     {
       name: "T",
       //0 1 0
@@ -16,7 +16,7 @@ export default class Tetrimino {
       //1 1 1 1
       //0 0 0 0
       //0 0 0 0
-      binaryValue: [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+      binaryValue: [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
       color: "#00FFFF",
     },
     {
@@ -46,35 +46,35 @@ export default class Tetrimino {
     },
     {
       name: "L",
-      // 0 0 0
       // 0 0 1
-      // 1 1 1
-      binaryValue: [0, 0, 0, 0, 0, 1, 1, 1, 1],
+      // 0 0 1
+      // 0 1 1
+      binaryValue: [0, 0, 1, 0, 0, 1, 0, 1, 1],
       color: "#FFA500",
     },
     {
       name: "J",
-      // 0 0 0
-      // 1 0 0
-      // 1 1 1
-      binaryValue: [0, 0, 0, 1, 0, 0, 1, 1, 1],
+      // 0 1 0
+      // 0 1 0
+      // 1 1 0
+      binaryValue: [0, 1, 0, 0, 1, 0, 1, 1, 0],
       color: "#0000FF",
     },
   ];
 
   constructor() {
     var randomPick = Math.floor(Math.random() * 7);
-    this.name = this.tetrominoes[randomPick].name;
-    this.binaryValue = this.tetrominoes[randomPick].binaryValue;
-    this.color = this.tetrominoes[randomPick].color;
+    this.name = this.Tetriminoes[randomPick].name;
+    this.binaryValue = this.Tetriminoes[randomPick].binaryValue;
+    this.color = this.Tetriminoes[randomPick].color;
 
-    this.xPostion = 11;
+    this.xPostion = 14;
     this.yPosition = 3;
     this.cells = [];
   }
 
   putInGame() {
-    this.xPostion = 3;
+    this.xPostion = 3 ;
     this.yPosition = 1;
   }
 

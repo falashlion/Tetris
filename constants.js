@@ -1,5 +1,5 @@
 export const PAUSE_MESSAGES = [
-  "Hold on! Your game is paused. Take a breath, strategize, and when you’re ready, let the blocks fall again!",
+  "Hold on! Your game is paused. ",
 ];
 
 export const LEVEL_TO_TICK_TIME = {

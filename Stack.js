@@ -22,21 +22,22 @@ export default class Stack {
 
   async clearFullRows() {
     let rowsToClear = [];
-    for (var i = 0; i < 20; i++) {
-      if (!this.rows[i].includes("empty")) {
-        rowsToClear.push(i);
+    for (let y = 0; y < 20; y++) {
+      if (!this.rows[y].includes("empty")) {
+        rowsToClear.push(y);
       }
     }
-    for (var x = 0; x < rowsToClear.length; x++) {
-      var y = rowsToClear[x];
+    for (let i = 0; i < rowsToClear.length; i++) {
+      var y = rowsToClear[i];
       while (y > 1) {
-        for (var j = 0; j < 10; j++) {
-          this.rows[y][j] = this.rows[y - 1][j];
+        for (var x = 0; x < 10; x++) {
+          this.rows[y][x] = this.rows[y - 1][x];
         }
         y--;
       }
       await this.sleep(100);
     }
+    return rowsToClear.length;
   }
 
   async sleep(milliseconds) {
@@ -68,12 +69,10 @@ export default class Stack {
   }
 
   addCells(cells) {
-    if (!cells || cells.length === 0) {
-      return;
-    }
-    for (var i = 0; i < cells.length; i++) {
-      var cell = cells[i];
-      if (cell.y >= 0 && cell.y < this.rows.length && cell.x >= 0 && cell.x < this.rows[0].length) {
+    console.log("cells to write on the stack:", cells);
+    for (let i = 0; i < cells.length; i++) {
+      let cell = cells[i];
+      if (cell.x >= 0 && cell.x < 10 && cell.y >= 0 && cell.y < 20) {
         this.rows[cell.y][cell.x] = cell.color;
       }
     }
