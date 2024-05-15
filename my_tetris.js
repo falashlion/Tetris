@@ -6,7 +6,7 @@ const canvas = document.getElementById("tetris");
 // console.log(canvas);
 
 canvas.width = 20 * cellSize;
-canvas.height = 20 * cellSize;
+canvas.height = 20  * cellSize;
 
 var ctx = canvas.getContext("2d");
 
@@ -32,20 +32,42 @@ document.onkeydown = (Event) => {
       tetris.move("down");
       break;
     case "ArrowUp":
-      tetris.move("turn");
+      tetris.move("clockwise");
       break;
-    case 'p':
+    case "x":
+      tetris.move("clockwise");
+      break;
+    case "Escape":
       tetris.pause();
       break;
-    case ' ':
+    case "F1":
+      Event.preventDefault();
+      tetris.pause();
+      break;
+    case " ":
       tetris.hardDrop();
       break;
-    case 'r':
+    case "r":
       tetris.restart();
       break;
-    case 'Enter':
-        tetris.restart();
-        break;
+    case "Enter": 
+      tetris.restart();
+      break;
+    case "":
+      tetris.move('clockwise');
+      break;
+    case "Z":
+      tetris.move('counterclockwise');
+      break;
+    case "ctrlKey":
+      tetris.move('counterclockwise');
+      break;
+    case "Shift":
+      tetris.move('hold');
+      break; 
+    case "c":
+      tetris.move('hold');
+      break;  
     default:
       return;
   }

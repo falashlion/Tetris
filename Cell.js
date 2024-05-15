@@ -20,7 +20,7 @@ export default class Cell {
     // Calculate the y-coordinate, adjusted to hide the top 2 rows.
     ctx.fillRect(
       this.x * cellSize,
-      (this.y - 2) * cellSize,
+      (this.y) * cellSize,
       cellSize,
       cellSize
     );

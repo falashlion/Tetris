@@ -6,8 +6,8 @@ body {
 }
 
 canvas {
-    border: 10px solid #222;
+    border: 8px solid #222;
     display: block;
-    margin: 50px auto;
+    margin: 40px auto;
     background-color: #555;
 }
