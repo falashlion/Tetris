@@ -35,7 +35,7 @@ export const SCORE_COMMENT = [
   { threshold: 75000, comment: "But how did you do it?" },
   { threshold: 70000, comment: "We want you for president." },
   { threshold: 65000, comment: "We need you for a great Europe." },
-  {threshold: 60000,comment: "The president is very satisfied with your work."},
+  { threshold: 60000, comment: "The president is very satisfied with your work."},
   { threshold: 55000, comment: "Do you want a position in the FSB?" },
   { threshold: 50000, comment: "You get invited to embassies." },
   { threshold: 45000, comment: "Satisfactory quarter. Keep going!" },

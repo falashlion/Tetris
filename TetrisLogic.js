@@ -24,9 +24,6 @@ export default class TetrisLogic {
     this.tetromino = firstTetromino;
     this.nextTetromino = new Tetromino();
     this.onPause = false;
-    if (typeof this.gameOver === "function") {
-      this.gameOver = this.gameOver.bind(this);
-    }
     this.isOver = false;
     this.clearingRows = false;
     this.startAsyncTicker();
@@ -68,11 +65,21 @@ export default class TetrisLogic {
   move(direction) {
     if (!this.isOver && !this.onPause) {
       this.tetromino.move(direction);
-      if (this.collisionOccurs() && direction === "down") {
-        this.tetromino.reverseMove(direction);
-        this.lockTetromino();
-      } else if (this.collisionOccurs()) {
-        this.tetromino.reverseMove(direction);
+      if (this.collisionOccurs()) {
+        switch (direction) {
+          case "down":
+            this.tetromino.reverseMove(direction);
+            this.lockTetromino();
+            break;
+          case "left":
+          case "right":
+            if (this.collisionOccurs("down")) {
+              this.tetromino.reverseMove(direction);
+            } else {
+              this.tetromino.move(direction);
+            }
+            break;
+        }
       } else {
         this.draw();
       }
@@ -104,10 +111,10 @@ export default class TetrisLogic {
     this.isOver = true;
     console.log("Game over");
     clearInterval(this.ticker);
- 
+
     var comment;
     for (var i = 0; i < SCORE_COMMENT.length; i++) {
-      if (this.score < SCORE_COMMENT[i].score) {
+      if (this.score >= SCORE_COMMENT[i].threshold) {
         comment = SCORE_COMMENT[i].comment;
         break;
       }
@@ -178,18 +185,18 @@ export default class TetrisLogic {
       var xPosition = Math.round(this.tetromino.cells[i].x);
       var yPosition = Math.round(this.tetromino.cells[i].y);
       if (xPosition < 0 || xPosition > 9) {
-        // console.log("collision with wall");
+        console.log("collision with wall");
         return true;
       }
 
       if (yPosition > 19) {
-        // console.log("collision with floor");
+        console.log("collision with floor");
         return true;
       }
       if (yPosition >= 0 && yPosition < 20) {
         if (xPosition >= 0 && xPosition < 10) {
           if (this.stack.rows[yPosition][xPosition] !== "empty") {
-            // console.log("collision with the stack");
+            console.log("collision with the stack");
             return true;
           }
         }
@@ -265,16 +272,16 @@ export default class TetrisLogic {
     this.ctx.save();
     this.ctx.fillStyle = "#FFFFFF";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    
-    this.ctx.clearRect(0, 0,20 * this.cellSize, 40 * this.cellSize );
+
+    this.ctx.clearRect(0, 0, 20 * this.cellSize, 40 * this.cellSize);
     this.ctx.font = "18px monospace";
     this.ctx.fillStyle = "white";
     this.ctx.fillText("NEXT", 15 * this.cellSize, 1 * this.cellSize);
     this.nextTetromino.draw(this.ctx, this.cellSize);
-    
+
     this.ctx.textAlign = "center";
     this.ctx.fillStyle = "white";
-    
+
     this.ctx.fillText(
       "LEVEL: " + this.level,
       15 * this.cellSize,
@@ -297,10 +304,10 @@ export default class TetrisLogic {
       15 * this.cellSize,
       17 * this.cellSize
     );
-    
+
     this.ctx.fillStyle = "black";
     this.ctx.fillRect(0, 0, 10 * this.cellSize, 20 * this.cellSize);
-    
+
     this.stack.drawStack(this.ctx, this.cellSize);
 
     this.tetromino.draw(this.ctx, this.cellSize);
